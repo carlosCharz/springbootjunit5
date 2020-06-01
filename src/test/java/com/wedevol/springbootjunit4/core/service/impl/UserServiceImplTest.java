@@ -2,15 +2,15 @@ package com.wedevol.springbootjunit4.core.service.impl;
 
 import java.util.Arrays;
 import java.util.List;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import com.wedevol.springbootjunit5.core.dao.UserRepository;
 import com.wedevol.springbootjunit5.core.entity.UserEntity;
 import com.wedevol.springbootjunit5.core.service.impl.UserServiceImpl;
@@ -21,7 +21,7 @@ import com.wedevol.springbootjunit5.core.service.impl.UserServiceImpl;
  * @author Charz++
  */
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class UserServiceImplTest {
 
     private static final Long USER_ONE_ID = 1L;
@@ -35,7 +35,7 @@ public class UserServiceImplTest {
 
     private UserEntity userEntity;
 
-    @Before
+    @BeforeEach
     public void init() {
         userEntity = new UserEntity();
         userEntity.setId(USER_ONE_ID);
@@ -53,44 +53,52 @@ public class UserServiceImplTest {
         UserEntity user = userService.findByIdOrThrow(USER_ONE_ID_STR);
 
         // Verification
-        Assert.assertNotNull(user);
+        Assertions.assertNotNull(user);
         Mockito.verify(repoMock, Mockito.times(1)).findById(ArgumentMatchers.anyString());
         Mockito.verifyNoMoreInteractions(repoMock);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void findOneAndUserIsNull() {
-        // Method call
-        UserEntity user = userService.findByIdOrThrow(USER_ONE_ID_STR);
+        Assertions.assertThrows(RuntimeException.class, () -> {
+            // Method call
+            UserEntity user = userService.findByIdOrThrow(USER_ONE_ID_STR);
+            
+            // Verification
+            Assertions.assertNull(user);
+            Mockito.verify(repoMock, Mockito.times(1)).findById(ArgumentMatchers.anyString());
+            Mockito.verifyNoMoreInteractions(repoMock);
+        });
 
-        // Verification
-        Assert.assertNull(user);
-        Mockito.verify(repoMock, Mockito.times(1)).findById(ArgumentMatchers.anyString());
-        Mockito.verifyNoMoreInteractions(repoMock);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void createUserAndUserAlreadyExists() {
         // Data preparation
         Mockito.when(repoMock.findByEmail("carlos@yopmail.com")).thenReturn(userEntity);
+        
+        Assertions.assertThrows(RuntimeException.class, () -> {
+            // Method call
+            UserEntity user = userService.create(userEntity);
 
-        // Method call
-        UserEntity user = userService.create(userEntity);
+            // Verification
+            Assertions.assertNull(user);
+            Mockito.verify(repoMock, Mockito.times(1)).findByEmail(ArgumentMatchers.anyString());
+            Mockito.verifyNoMoreInteractions(repoMock);
+        });
 
-        // Verification
-        Assert.assertNull(user);
-        Mockito.verify(repoMock, Mockito.times(1)).findByEmail(ArgumentMatchers.anyString());
-        Mockito.verifyNoMoreInteractions(repoMock);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void updateUserAndUserNotExists() {
-        // Method call
-        userService.update(USER_ONE_ID_STR, userEntity);
+        Assertions.assertThrows(RuntimeException.class, () -> {
+            // Method call
+            userService.update(USER_ONE_ID_STR, userEntity);
 
-        // Verification
-        Mockito.verify(repoMock, Mockito.times(1)).findByEmail(ArgumentMatchers.anyString());
-        Mockito.verifyNoMoreInteractions(repoMock);
+            // Verification
+            Mockito.verify(repoMock, Mockito.times(1)).findByEmail(ArgumentMatchers.anyString());
+            Mockito.verifyNoMoreInteractions(repoMock);
+        });
     }
 
     @Test
@@ -103,7 +111,7 @@ public class UserServiceImplTest {
         Integer usersQty = userService.countAll();
 
         // Verification
-        Assert.assertTrue(usersQty.intValue() == 3);
+        Assertions.assertTrue(usersQty.intValue() == 3);
         Mockito.verify(repoMock, Mockito.times(1)).countAll();
         Mockito.verifyNoMoreInteractions(repoMock);
     }

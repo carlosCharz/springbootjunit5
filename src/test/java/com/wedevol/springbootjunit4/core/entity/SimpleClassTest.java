@@ -1,22 +1,23 @@
 package com.wedevol.springbootjunit4.core.entity;
 
-import static org.junit.Assert.assertEquals;
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 public class SimpleClassTest {
 
     @Test
+    @DisplayName("Line array split not empty test")
     public void lineArraySplitNotEmptyTest() {
         String line = "4567|arturo|perez|teleport engineering manager|Germany|Telecommunications|3|176";
         String[] lineParts = line.split("\\|");
-        Assert.assertFalse(lineParts.length == 0);
+        Assertions.assertFalse(lineParts.length == 0);
     }
     
-    @Ignore
+    @Disabled
     public void testDisabled() {
-        assertEquals(26, 14 + 12);
+        Assertions.assertEquals(26, 14 + 12);
     }
 
 }

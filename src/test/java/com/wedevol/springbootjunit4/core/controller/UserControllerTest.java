@@ -10,19 +10,17 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 import java.io.IOException;
 import java.util.Arrays;
 import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.mock.http.MockHttpOutputMessage;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.util.NestedServletException;
@@ -36,9 +34,8 @@ import com.wedevol.springbootjunit5.core.entity.UserEntity;
  * @author Charz++
  */
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = EntryPoint.class)
-@WebAppConfiguration
+@AutoConfigureMockMvc
 public class UserControllerTest {
 
     private static final Long USER_ONE_ID = 1L;
@@ -60,10 +57,10 @@ public class UserControllerTest {
     public void setConverters(HttpMessageConverter<?>[] converters) {
         mappingJackson2HttpMessageConverter = Arrays.asList(converters).stream()
                 .filter(hmc -> hmc instanceof MappingJackson2HttpMessageConverter).findAny().orElse(null);
-        Assert.assertNotNull("the JSON message converter must not be null", this.mappingJackson2HttpMessageConverter);
+        Assertions.assertNotNull(this.mappingJackson2HttpMessageConverter, "the JSON message converter must not be null");
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         mockMvc = webAppContextSetup(webApplicationContext).build();
         UserEntity user1 = new UserEntity("Carlos", 29, "carlos@yopmail.com");
@@ -72,15 +69,17 @@ public class UserControllerTest {
         userRepository.create(user2);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         userRepository.resetDb();
     }
 
-    @Test(expected = NestedServletException.class)
+    @Test
     public void getNonExistingUser() throws Exception {
-        mockMvc.perform(get("/users/100")).andExpect(status().isNotFound())
-                .andExpect(content().contentType(CONTENT_TYPE));
+        Assertions.assertThrows(NestedServletException.class, () -> {
+            mockMvc.perform(get("/users/100")).andExpect(status().isNotFound())
+            .andExpect(content().contentType(CONTENT_TYPE));
+        });
     }
 
     @Test
