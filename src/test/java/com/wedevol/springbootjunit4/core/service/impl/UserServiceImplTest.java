@@ -63,7 +63,7 @@ public class UserServiceImplTest {
         Assertions.assertThrows(RuntimeException.class, () -> {
             // Method call
             UserEntity user = userService.findByIdOrThrow(USER_ONE_ID_STR);
-            
+
             // Verification
             Assertions.assertNull(user);
             Mockito.verify(repoMock, Mockito.times(1)).findById(ArgumentMatchers.anyString());
@@ -76,7 +76,7 @@ public class UserServiceImplTest {
     public void createUserAndUserAlreadyExists() {
         // Data preparation
         Mockito.when(repoMock.findByEmail("carlos@yopmail.com")).thenReturn(userEntity);
-        
+
         Assertions.assertThrows(RuntimeException.class, () -> {
             // Method call
             UserEntity user = userService.create(userEntity);

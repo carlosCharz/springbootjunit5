@@ -14,7 +14,7 @@ public class SimpleClassTest {
         String[] lineParts = line.split("\\|");
         Assertions.assertFalse(lineParts.length == 0);
     }
-    
+
     @Disabled
     public void testDisabled() {
         Assertions.assertEquals(26, 14 + 12);

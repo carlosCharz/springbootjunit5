@@ -57,7 +57,8 @@ public class UserControllerTest {
     public void setConverters(HttpMessageConverter<?>[] converters) {
         mappingJackson2HttpMessageConverter = Arrays.asList(converters).stream()
                 .filter(hmc -> hmc instanceof MappingJackson2HttpMessageConverter).findAny().orElse(null);
-        Assertions.assertNotNull(this.mappingJackson2HttpMessageConverter, "the JSON message converter must not be null");
+        Assertions.assertNotNull(this.mappingJackson2HttpMessageConverter,
+                "the JSON message converter must not be null");
     }
 
     @BeforeEach
@@ -78,7 +79,7 @@ public class UserControllerTest {
     public void getNonExistingUser() throws Exception {
         Assertions.assertThrows(NestedServletException.class, () -> {
             mockMvc.perform(get("/users/100")).andExpect(status().isNotFound())
-            .andExpect(content().contentType(CONTENT_TYPE));
+                    .andExpect(content().contentType(CONTENT_TYPE));
         });
     }
 
